@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Terminal Tidbits - zsh</title>
+        <link rel="stylesheet" href="dobyrch.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="dobyrch.github.io/">Terminal Tidbits </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="dobyrch.github.io/category/zsh.html">zsh</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="dobyrch.github.io/zsh-completions.html">zsh completions</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2016-04-12T00:00:00-04:00">
+                Published: Tue 12 April 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="dobyrch.github.io/author/doug-christman.html">Doug Christman</a>
+        </address>
+<p>In <a href="dobyrch.github.io/category/zsh.html">zsh</a>.</p>
+
+</footer><!-- /.post-info --><p>One of zsh's most convenient features is its flexible completion system. These are just a few examples of tab-completion that I use regularly.  If you're a bash user, don't fear! Check your distribution's repositories for a <code>bash-completion</code> package, which provides much of the functionality shown below.</p>
+<h2>pacman</h2>
+<p>For me, the most challenging part of installing video drivers on Linux is spelling "nouveau" correctly on my first try.  Fortunately, zsh can help.</p>
+<div class="highlight"><pre><span></span>&gt; pacman -S xf86-video-n&lt;TAB&gt;
+xf86-video-neomagic  xf86-video-nouveau   xf86-video-nv
+</pre></div>
+
+
+<p>Beautiful! zsh can work with your favorite package manager to tab-complete the names of available packages.</p>
+<h2>tar</h2>
+<p>Using tar can be <a href="http://xkcd.com/1168/">confounding at times</a>, but zsh has your back.</p>
+<div class="highlight"><pre><span></span>&gt; tar &lt;TAB&gt;
+A  -- append to an archive
+c  -- create a new archive
+f  -- specify archive file or device
+t  -- list archive contents
+u  -- update archive
+v  -- verbose output
+x  -- extract files from an archive
+</pre></div>
+
+
+<p>Pretty nifty—zsh can show us a summary of tar's options, in case you ever forget that you need to use the "t" flag to list the contents of an archive.</p>
+<p>Even more interesting is zsh's ability to provide filetype-aware completions.  Suppose you want to extract a compressed file that's located somewhere in your cluttered downloads directory:</p>
+<div class="highlight"><pre><span></span>&gt; ls
+clutter.pdf  gohufont-2.0.tar.gz  linux-4.6-rc3.tar.xz  refuse.flac  termboy.tar.xz
+garbage.mkv  junk.png             lua-5.3.2.tar.gz      rubbish.iso  waste.py
+
+&gt; tar xf &lt;TAB&gt;
+gohufont-2.0.tar.gz   linux-4.6-rc3.tar.xz  lua-5.3.2.tar.gz      termboy.tar.xz
+</pre></div>
+
+
+<p>Neat, it only lists files that tar knows how to handle.  But wait, there's more:</p>
+<div class="highlight"><pre><span></span>&gt; tar xJf &lt;TAB&gt;
+linux-4.6-rc3.tar.xz  termboy.tar.xz
+</pre></div>
+
+
+<p>Cool! This time zsh noticed that we passed the "J" flag to tar, so it only shows xz archives.</p>
+<h2>mpv</h2>
+<p>Have you ever watched a movie where you need to turn up the volume to hear what the characters are saying, only to have your eardrums blown out the next time there's a sudden spike in volume?  My favorite media player, mpv, has an option to fix that.  If only I could remember the name...</p>
+<div class="highlight"><pre><span></span>&gt; mpv --af=&lt;TAB&gt;
+channels      -- Insert or remove channels
+delay         -- Delay audio filter
+drc           -- Dynamic range compression filter
+equalizer     -- Equalizer audio filter
+format        -- Force audio format
+lavcac3enc    -- runtime encode to ac3 using libavcodec
+lavfi         -- libavfilter bridge
+lavrresample  -- Sample frequency conversion using libavresample
+pan           -- Panning audio filter
+rubberband    -- Pitch conversion with librubberband
+scaletempo    -- Scale audio tempo while maintaining pitch
+volume        -- Volume control audio filter
+</pre></div>
+
+
+<p>zsh to the rescue! In this example zsh lists the arguments available to the audio filter option (--af).  Ah, dynamic range compression, that's what I was looking for!</p>
+<h2>pactl</h2>
+<p>Sometimes I want to reduce the volume of one application without changing the volume of another—to listen to music while playing a game, for example.  PulseAudio provides the <code>pactl</code> command to modify the volume of a running program, but it can be a little awkward to use since you need to know the numeric index that identifies each application.  Not anymore:</p>
+<div class="highlight"><pre><span></span>&gt; pacmd set-sink-input-volume &lt;TAB&gt;
+3  -- &quot;ALSA plug-in [mednafen]&quot;
+4  -- &quot;mpv Media Player&quot;
+</pre></div>
+
+
+<p>zsh shows a nice little description of each program and its ID.  That "<code>set-sink-input-volume</code>" is a bit of a mouthful, but zsh can complete that too!  This is especially handy if you don't run a full desktop environment that has a graphical volume mixer.</p>
+<h2>kill</h2>
+<p>Got an unruly process you need to take care of?</p>
+<div class="highlight"><pre><span></span>&gt; kill &lt;TAB&gt;
+8266 pts/0    00:00:00 zsh
+8341 pts/0    00:00:00 vim
+8343 pts/0    00:00:00 python
+8366 pts/0    00:00:00 crawl-tiles
+</pre></div>
+
+
+<p>You guessed it, zsh can complete that too. Who needs pkill?</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
