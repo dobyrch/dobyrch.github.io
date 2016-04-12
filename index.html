@@ -92,7 +92,7 @@ volume        -- Volume control audio filter
 <p>zsh to the rescue! In this example zsh lists the arguments available to the audio filter option (--af).  Ah, dynamic range compression, that's what I was looking for!</p>
 <h2>pactl</h2>
 <p>Sometimes I want to reduce the volume of one application without changing the volume of another—to listen to music while playing a game, for example.  PulseAudio provides the <code>pactl</code> command to modify the volume of a running program, but it can be a little awkward to use since you need to know the numeric index that identifies each application.  Not anymore:</p>
-<div class="highlight"><pre><span></span>&gt; pacmd set-sink-input-volume &lt;TAB&gt;
+<div class="highlight"><pre><span></span>&gt; pactl set-sink-input-volume &lt;TAB&gt;
 3  -- &quot;ALSA plug-in [mednafen]&quot;
 4  -- &quot;mpv Media Player&quot;
 </pre></div>
