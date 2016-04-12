@@ -77,7 +77,7 @@ linux-4.6-rc3.tar.xz  termboy.tar.xz
 
 <p>Cool! This time zsh noticed that we passed the "J" flag to tar, so it only shows xz archives.</p>
 <h2>mpv</h2>
-<p>Have you ever watched a movie where you need to turn up the volume to hear what the characters are saying, only to have your eardrums blown out the next time there's a sudden spike in volume?  My favorite media player, mpv, has an option to fix that.  If only I could remember the name...</p>
+<p>Have you ever watched a movie where you need to turn up the sound to hear what the characters are saying, only to have your eardrums blown out the next time there's a sudden spike in volume?  My favorite media player, mpv, has an option to fix that.  If only I could remember the name...</p>
 <div class="highlight"><pre><span></span>&gt; mpv --af=&lt;TAB&gt;
 channels      -- Insert or remove channels
 delay         -- Delay audio filter
@@ -96,14 +96,14 @@ volume        -- Volume control audio filter
 
 <p>zsh to the rescue! In this example zsh lists the arguments available to the audio filter option (--af).  Ah, dynamic range compression, that's what I was looking for!</p>
 <h2>pactl</h2>
-<p>Sometimes I want to reduce the volume of one application without changing the volume of another—to listen to music while playing a game, for example.  PulseAudio provides the <code>pactl</code> command to modify the volume of a running program, but it can be a little awkward to use since you need to know the numeric index that identifies each application.  Not anymore:</p>
+<p>Sometimes I want to reduce the volume of one application without changing the volume of another—to listen to music while playing a game, for example.  PulseAudio provides the <code>pactl</code> command to modify the volume of a running program, but it can be a little awkward to use since you need to know the numeric index that identifies each application to the PulseAudio server.  Not anymore:</p>
 <div class="highlight"><pre><span></span>&gt; pactl set-sink-input-volume &lt;TAB&gt;
 3  -- &quot;ALSA plug-in [mednafen]&quot;
 4  -- &quot;mpv Media Player&quot;
 </pre></div>
 
 
-<p>zsh shows a nice little description of each program and its ID.  That "<code>set-sink-input-volume</code>" is a bit of a mouthful, but zsh can complete that too!  This is especially handy if you don't run a full desktop environment that has a graphical volume mixer.</p>
+<p>zsh shows a nice little description of each program and its ID.  That <code>set-sink-input-volume</code> is a bit of a mouthful, but zsh can complete that as well.  This one is especially handy if you don't run a full desktop environment that has a graphical volume mixer.</p>
 <h2>kill</h2>
 <p>Got an unruly process you need to take care of?</p>
 <div class="highlight"><pre><span></span>&gt; kill &lt;TAB&gt;
