@@ -20,7 +20,100 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/zsh-completions.html">zsh completions</a></h1>
+                    <h1 class="entry-title"><a href="/oh-my-glob.html">oh my glob</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2016-04-13T00:00:00-04:00">
+                Published: Wed 13 April 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/doug-christman.html">Doug Christman</a>
+        </address>
+<p>In <a href="/category/zsh.html">zsh</a>.</p>
+
+</footer><!-- /.post-info --><p>Globs.  Fun to say and pretty darn useful too.  Most of us are probably familiar with <code>*</code>, which expands to all of the files in a directory, but what else can globs do for you?</p>
+<h2>recursion</h2>
+<p>Suppose you want to generate a list of all filenames with a particular extension—to generate a <a href="https://en.wikipedia.org/wiki/Ctags">tags file</a>, for instance.  If your files are spread throughout multiple nested directories, you might use <code>find</code> to do the job:</p>
+<div class="highlight"><pre><span></span>&gt; find . -name &#39;*.py&#39; -exec ctags {} +
+</pre></div>
+
+
+<p><code>find</code> is a wonderful tool that's worth learning, but zsh provides a more concise way of doing the same thing:</p>
+<div class="highlight"><pre><span></span>&gt; ctags **/*.py
+</pre></div>
+
+
+<p>Here we see a very special glob pattern in action: <code>**</code>.  It expands recursively to match files in the current directory and all subdirectories.  There's also <code>***</code>, which follows symbolic links while recursing.</p>
+<p>Note that the behavior of <code>**</code> isn't quite the same as <code>find</code>—if you try to run <code>ls /**/*</code> (that is, list every<sup><a href="#footnote1">[1]</a></sup> file on your system), you'll probably see the message "argument list too long."  That's because globs are expanded <em>on the command line</em>, and <code>ls</code> simply isn't equipped to handle hundreds of thousands of arguments.</p>
+<p>However, don't discount the power of <code>**</code> just yet:  On my system, using <code>**</code> to generate a tags file for the entire Linux kernel source tree was just as fast as <code>find</code>.</p>
+<h2>case-insensitive matching</h2>
+<p>Usually case-sensitive filenames aren't much of an issue, but occasionally one runs across a heretic who seems to take pleasure in <code>Extremely_IN-con-VEN-ient_Names</code>.  Don't worry, no amount of CamelCasing can deter zsh<sup><a href="#footnote2">[2]</a></sup>:</p>
+<div class="highlight"><pre><span></span>&gt; ls (#i)foo*
+FOO  FOo.awk  foo.c  Foo.gz  fOO.jar  FoO.js  foO.pdf  fOo.wav
+</pre></div>
+
+
+<p>Those parentheses before the pattern allow you to specify additional flags that control the behavior of the match.  In this case the <code>i</code> flag tells zsh to ignore the case of filenames.  Try combining this one with <code>**</code> when you need a convenient way to find a file and you can't quite remember how it was spelled.</p>
+<h2>approximate matching</h2>
+<p>If case-insensitive matching still isn't lenient enough, you can specify how many "mistakes" are allowed in the match.  Observe:</p>
+<div class="highlight"><pre><span></span>&gt; ls (#a1)foobar
+fobar  foobar  foobra  foopar  fooobar
+</pre></div>
+
+
+<p>Mistakes include transposed characters, missing characters, extra characters, and characters which differ from your original pattern.</p>
+<h2>exclusion</h2>
+<p>I know I've done this on more than one occasion:</p>
+<div class="highlight"><pre><span></span>&gt; mv * subdir
+mv: cannot move &#39;subdir&#39; to a subdirectory of itself, &#39;subdir/subdir&#39;
+</pre></div>
+
+
+<p><code>mv</code> still does what I wanted it to, but it prints an error message and returns a non-zero error code.  That behavior might not be optimal in a more complex shell script where it would be nice to know if an actual problem occurred.  With zsh, it's possible to run a command on every file <em>except</em> the one you specify.</p>
+<div class="highlight"><pre><span></span>&gt; mv ^subdir subdir
+</pre></div>
+
+
+<p>No more complaints from <code>mv</code>!</p>
+<p>You can also use <code>~</code> to match one pattern but not another:  <code>*.gz~*.tar.gz</code> would match all gzipped files which are <em>not</em> contained in a <code>tar</code> archive.</p>
+<h2>ranges</h2>
+<p>So, your grandma asked you to send her some pictures from your vacation.  Ranges are your friend.</p>
+<div class="highlight"><pre><span></span>&gt; tar czf yosemite_pics.tar.gz IMG_&lt;3399-3412&gt;.jpg
+</pre></div>
+
+
+<h2>permissions</h2>
+<p>You can even match files based on their mode bits:</p>
+<div class="highlight"><pre><span></span>chmod 755 *.sh(f777)
+</pre></div>
+
+
+<p>There, now you don't have to worry about someone else modifying your scripts.</p>
+<p>Those parentheses at the end of a pattern allow you to specify glob <em>qualifiers</em>—additional conditions that files must meet, including the type of file (symbolic link, socket, pipe, device, etc.), who owns it, and more.  You can even specify an arbitrary shell command that tests whether or not to include each file in the results.</p>
+<h2>regular expressions</h2>
+<p>Have you ever wanted to delete every file with a name that starts with one or more letters, followed by zero or more digits, and optionally has an extension of .sh or .py?  No?  Well here it is anyway.</p>
+<div class="highlight"><pre><span></span>&gt; rm [[:alpha:]]##[[:digit:]]#(.(sh|py))(#c0,1)
+</pre></div>
+
+
+<p>Phew.  Now these are just getting ridiculous... but as you can see, you can leverage globbing to select files using just about any criteria you can imagine.</p>
+<h3>It doesn't end here...</h3>
+<p>These few examples barely scrape the surface of what zsh can do.  Check out the "FILENAME GENERATION" section of the <code>zshexpn</code> man page and you'll probably find something you never knew you needed.  Have fun!</p>
+<p><small id="footnote1" >[1] Well, <em>almost</em> every file.  Glob patterns don't match a leading "." by default, so hidden files won't be listed unless you enable zsh's <code>GLOB_DOTS</code> option or explicitly include the leading dot in your pattern (for example, <code>**/.*</code>).</small></p>
+<p><small id="footnote2" >[2] You'll have to turn on the EXTENDED_GLOB option to enable some of thease features.  Consult your local zsh man pages for the details.</small></p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/you-complete-me.html" rel="bookmark"
+                           title="Permalink to you complete me">you complete me</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2016-04-12T00:00:00-04:00">
                 Published: Tue 12 April 2016
@@ -31,86 +124,12 @@
         </address>
 <p>In <a href="/category/zsh.html">zsh</a>.</p>
 
-</footer><!-- /.post-info --><p>One of zsh's most convenient features is its flexible completion system. These are just a few examples of tab-completion that I use regularly.  If you're a bash user, don't fear! Check your distribution's repositories for a <code>bash-completion</code> package, which provides much of the functionality shown below.</p>
-<h2>pacman</h2>
-<p>For me, the most challenging part of installing video drivers on Linux is spelling "nouveau" correctly on my first try.  Fortunately, zsh can help.</p>
-<div class="highlight"><pre><span></span>&gt; pacman -S xf86-video-n&lt;TAB&gt;
-xf86-video-neomagic  xf86-video-nouveau   xf86-video-nv
-</pre></div>
-
-
-<p>Beautiful! zsh can work with your favorite package manager to tab-complete the names of available packages.</p>
-<h2>tar</h2>
-<p>Using tar can be <a href="http://xkcd.com/1168/">confounding at times</a>, but zsh has your back.</p>
-<div class="highlight"><pre><span></span>&gt; tar &lt;TAB&gt;
-A  -- append to an archive
-c  -- create a new archive
-f  -- specify archive file or device
-t  -- list archive contents
-u  -- update archive
-v  -- verbose output
-x  -- extract files from an archive
-</pre></div>
-
-
-<p>Pretty nifty—zsh can show us a summary of tar's options, in case you ever forget that you need to use the "t" flag to list the contents of an archive.</p>
-<p>Even more interesting is zsh's ability to provide filetype-aware completions.  Suppose you want to extract a compressed file that's located somewhere in your cluttered downloads directory:</p>
-<div class="highlight"><pre><span></span>&gt; ls
-clutter.pdf  gohufont-2.0.tar.gz  linux-4.6-rc3.tar.xz  refuse.flac  termboy.tar.xz
-garbage.mkv  junk.png             lua-5.3.2.tar.gz      rubbish.iso  waste.py
-
-&gt; tar xf &lt;TAB&gt;
-gohufont-2.0.tar.gz   linux-4.6-rc3.tar.xz  lua-5.3.2.tar.gz      termboy.tar.xz
-</pre></div>
-
-
-<p>Neat, it only lists files that tar knows how to handle.  But wait, there's more:</p>
-<div class="highlight"><pre><span></span>&gt; tar xJf &lt;TAB&gt;
-linux-4.6-rc3.tar.xz  termboy.tar.xz
-</pre></div>
-
-
-<p>Cool! This time zsh noticed that we passed the "J" flag to tar, so it only shows xz archives.</p>
-<h2>mpv</h2>
-<p>Have you ever watched a movie where you need to turn up the sound to hear what the characters are saying, only to have your eardrums blown out the next time there's a sudden spike in volume?  My favorite media player, mpv, has an option to fix that.  If only I could remember the name...</p>
-<div class="highlight"><pre><span></span>&gt; mpv --af=&lt;TAB&gt;
-channels      -- Insert or remove channels
-delay         -- Delay audio filter
-drc           -- Dynamic range compression filter
-equalizer     -- Equalizer audio filter
-format        -- Force audio format
-lavcac3enc    -- runtime encode to ac3 using libavcodec
-lavfi         -- libavfilter bridge
-lavrresample  -- Sample frequency conversion using libavresample
-pan           -- Panning audio filter
-rubberband    -- Pitch conversion with librubberband
-scaletempo    -- Scale audio tempo while maintaining pitch
-volume        -- Volume control audio filter
-</pre></div>
-
-
-<p>zsh to the rescue! In this example zsh lists the arguments available to the audio filter option (--af).  Ah, dynamic range compression, that's what I was looking for!</p>
-<h2>pactl</h2>
-<p>Sometimes I want to reduce the volume of one application without changing the volume of another—to listen to music while playing a game, for example.  PulseAudio provides the <code>pactl</code> command to modify the volume of a running program, but it can be a little awkward to use since you need to know the numeric index that identifies each application to the PulseAudio server.  Not anymore:</p>
-<div class="highlight"><pre><span></span>&gt; pactl set-sink-input-volume &lt;TAB&gt;
-3  -- &quot;ALSA plug-in [mednafen]&quot;
-4  -- &quot;mpv Media Player&quot;
-</pre></div>
-
-
-<p>zsh shows a nice little description of each program and its ID.  That <code>set-sink-input-volume</code> is a bit of a mouthful, but zsh can complete that as well.  This one is especially handy if you don't run a full desktop environment that has a graphical volume mixer.</p>
-<h2>kill</h2>
-<p>Got an unruly process you need to take care of?</p>
-<div class="highlight"><pre><span></span>&gt; kill &lt;TAB&gt;
-8266 pts/0    00:00:00 zsh
-8341 pts/0    00:00:00 vim
-8343 pts/0    00:00:00 python
-8366 pts/0    00:00:00 crawl-tiles
-</pre></div>
-
-
-<p>You guessed it, zsh can complete that too. Who needs pkill?</p>                </article>
-            </aside><!-- /#featured -->
+</footer><!-- /.post-info -->                <p>One of zsh's most convenient features is its flexible completion system. These are just a few examples of tab-completion that I use regularly.  If you're a bash user, don't fear! Check your distribution's repositories for a <code>bash-completion</code> package, which provides much of the functionality shown below ...</p>
+                <a class="readmore" href="/you-complete-me.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
         <section id="extras" class="body">
         </section><!-- /#extras -->
 
