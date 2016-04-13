@@ -49,7 +49,7 @@
 
 
 <p>Here we see a very special glob pattern in action: <code>**</code>.  It expands recursively to match files in the current directory and all subdirectories.  There's also <code>***</code>, which follows symbolic links while recursing.</p>
-<p>Note that the behavior of <code>**</code> isn't quite the same as <code>find</code>—if you try to run <code>ls /**/*</code> (that is, list every<sup><a href="#footnote1">[1]</a></sup> file on your system), you'll probably see the message "argument list too long."  That's because globs are expanded <em>on the command line</em>, and <code>ls</code> simply isn't equipped to handle hundreds of thousands of arguments.</p>
+<p>Note that the behavior of <code>**</code> isn't quite the same as <code>find</code>—if you try to run <code>ls /**/*</code> (that is, list every<sup><a href="#footnote1">[1]</a></sup> file on your system), you'll probably see the message "argument list too long."  That's because globs are expanded <em>on the command line</em>, and <code>zsh</code> simply isn't equipped to handle hundreds of thousands of arguments.</p>
 <p>However, don't discount the power of <code>**</code> just yet:  On my system, using <code>**</code> to generate a tags file for the entire Linux kernel source tree was just as fast as <code>find</code>.</p>
 <h2>case-insensitive matching</h2>
 <p>Usually case-sensitive filenames aren't much of an issue, but occasionally one runs across a heretic who seems to take pleasure in <code>Extremely_IN-con-VEN-ient_Names</code>.  Don't worry, no amount of CamelCasing can deter zsh<sup><a href="#footnote2">[2]</a></sup>:</p>
@@ -68,7 +68,7 @@ fobar  foobar  foobra  foopar  fooobar
 
 <p>Mistakes include transposed characters, missing characters, extra characters, and characters which differ from your original pattern.</p>
 <h2>exclusion</h2>
-<p>I know I've done this on more than one occasion:</p>
+<p>I've done this on more than one occasion:</p>
 <div class="highlight"><pre><span></span>&gt; mv * subdir
 mv: cannot move &#39;subdir&#39; to a subdirectory of itself, &#39;subdir/subdir&#39;
 </pre></div>
