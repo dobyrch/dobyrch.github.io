@@ -20,7 +20,70 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/oh-my-glob.html">oh my glob</a></h1>
+                    <h1 class="entry-title"><a href="/simpler-sockets.html">simpler sockets</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2016-04-19T00:00:00-04:00">
+                Published: Tue 19 April 2016
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/doug-christman.html">Doug Christman</a>
+        </address>
+<p>In <a href="/category/zsh.html">zsh</a>.</p>
+
+</footer><!-- /.post-info --><p>There are a handful of keys that I never touch—Scroll Lock, SysRq, F1 through F12, and that strange button with an unidentifiable glyph which doesn't seem to do anything.</p>
+<p>Pause is another one of those keys.  Wouldn't it be nice if <code>pause</code> lived up to its name and could actually pause a video or music, regardless of which window is in focus?</p>
+<p>Well, it can.  But that's not the interesting part.  This post showcases some curious functionality of zsh that ended up being surprisingly useful: the <code>zsocket</code> command.</p>
+<h2>the setup</h2>
+<p>My media player of choice, mpv, can be controlled by an external program through the use of a JSON IPC protocol.  Let's get started by enabling the necessary option in <code>mpv.conf</code>—it just takes a single line:</p>
+<div class="highlight"><pre><span></span>input-ipc-server=/tmp/mpv-socket
+</pre></div>
+
+
+<p>Whenever we run mpv, it will start listening to <code>/tmp/mpv-socket</code> (creating the file if it doesn't already exist).  The man page for mpv describes its protocol in more detail, but the message for toggling the player's pause state is fairly straightforward: </p>
+<div class="highlight"><pre><span></span>{&quot;command&quot;: [&quot;cycle&quot;, &quot;pause&quot;]}
+</pre></div>
+
+
+<h2>the solution</h2>
+<p>Now that the socket is open, we need to send our command.  Despite the fact that it looks like a file, we can't simply <code>echo</code> a string to the socket:</p>
+<div class="highlight"><pre><span></span>&gt; echo &#39;{&quot;command&quot;: [&quot;cycle&quot;, &quot;pause&quot;]}&#39; &gt; /tmp/mpv-socket
+zsh: no such device or address: /tmp/mpv-socket
+</pre></div>
+
+
+<p>mpv's man page recommends using <code>socat</code> to talk to the socket. That may be the easiest solution, but I'd rather not install an extra package on my system for a command that I only use in one place.</p>
+<p>We could write a short program to do the job, but the Berkeley sockets API is a bit unwieldy for such a simple task.</p>
+<p>Considering that this post is supposed to be about zsh, you already know where this is going.  Fine, let's see what zsh can do:</p>
+<div class="highlight"><pre><span></span>zmodload zsh/net/socket
+zsocket /tmp/mpv-socket
+print -u &quot;<span class="cp">${</span><span class="n">REPLY</span><span class="cp">}</span>&quot; &#39;{&quot;command&quot;: [&quot;cycle&quot;, &quot;pause&quot;]}&#39;
+</pre></div>
+
+
+<p>Three lines, not too shabby!  It works like this:</p>
+<ul>
+<li><code>zmodload</code> loads zsh's socket module, which provides the <code>zsocket</code> function.</li>
+<li><code>zsocket</code> opens the socket and stores its file descriptor in the variable REPLY.</li>
+<li><code>print</code> writes our command to the socket. The <code>-u</code> option allows us to specify a file descriptor.</li>
+</ul>
+<p>All that's left is to wire up the pause key to run our script.  That process varies by desktop environment, so I'll leave the rest up to you.</p>
+<h3>One last thing...</h3>
+<p>If you think <code>zsocket</code> is neat, be sure to check out <code>ztcp</code> in the <code>zshmodules</code> man page.  Just as <code>zsocket</code> provides a simple way to communicate via Unix sockets, <code>ztcp</code> can be used to read and write Internet sockets.</p>
+<p>Happy scripting!</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/oh-my-glob.html" rel="bookmark"
+                           title="Permalink to oh my glob">oh my glob</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2016-04-13T00:00:00-04:00">
                 Published: Wed 13 April 2016
@@ -31,81 +94,12 @@
         </address>
 <p>In <a href="/category/zsh.html">zsh</a>.</p>
 
-</footer><!-- /.post-info --><p>Globs.  Fun to say and pretty darn useful too.  Most of us are probably familiar with <code>*</code>, which expands to all of the files in a directory, but what else can globs do for you?</p>
+</footer><!-- /.post-info -->                <p>Globs.  Fun to say and pretty darn useful too.  Most of us are probably familiar with <code>*</code>, which expands to all of the files in a directory, but what else can globs do for you?</p>
 <h2>recursion</h2>
-<p>Suppose you want to generate a list of all filenames with a particular extension—to generate a <a href="https://en.wikipedia.org/wiki/Ctags">tags file</a>, for instance.  If your files are spread throughout multiple nested directories, you might use <code>find</code> to do the job:</p>
-<div class="highlight"><pre><span></span>&gt; find . -name &#39;*.py&#39; -exec ctags {} +
-</pre></div>
-
-
-<p><code>find</code> is a wonderful tool that's worth learning, but zsh provides a more concise way of doing the same thing:</p>
-<div class="highlight"><pre><span></span>&gt; ctags **/*.py
-</pre></div>
-
-
-<p>Here we see a very special glob pattern in action: <code>**</code>.  It expands recursively to match files in the current directory and all subdirectories.  There's also <code>***</code>, which follows symbolic links while recursing.</p>
-<p>Note that the behavior of <code>**</code> isn't quite the same as <code>find</code>—if you try to run <code>ls /**/*</code> (that is, list every<sup><a href="#footnote1">[1]</a></sup> file on your system), you'll probably see the message "argument list too long."  That's because globs are expanded <em>on the command line</em>, and <code>zsh</code> simply isn't equipped to handle hundreds of thousands of arguments.</p>
-<p>However, don't discount the power of <code>**</code> just yet:  On my system, using <code>**</code> to generate a tags file for the entire Linux kernel source tree was just as fast as <code>find</code>.</p>
-<h2>case-insensitive matching</h2>
-<p>Usually case-sensitive filenames aren't much of an issue, but occasionally one runs across a heretic who seems to take pleasure in <code>Extremely_IN-con-VEN-ient_Names</code>.  Don't worry, no amount of CamelCasing can deter zsh<sup><a href="#footnote2">[2]</a></sup>:</p>
-<div class="highlight"><pre><span></span>&gt; ls (#i)foo*
-FOO  FOo.awk  foo.c  Foo.gz  fOO.jar  FoO.js  foO.pdf  fOo.wav
-</pre></div>
-
-
-<p>Those parentheses before the pattern allow you to specify additional flags that control the behavior of the match.  In this case the <code>i</code> flag tells zsh to ignore the case of filenames.  Try combining this one with <code>**</code> when you need a convenient way to find a file and you can't quite remember how it was spelled.</p>
-<h2>approximate matching</h2>
-<p>If case-insensitive matching still isn't lenient enough, you can specify how many "mistakes" are allowed in the match.  Observe:</p>
-<div class="highlight"><pre><span></span>&gt; ls (#a1)foobar
-fobar  foobar  foobra  foopar  fooobar
-</pre></div>
-
-
-<p>Mistakes include transposed characters, missing characters, extra characters, and characters which differ from your original pattern.</p>
-<h2>exclusion</h2>
-<p>I've done this on more than one occasion:</p>
-<div class="highlight"><pre><span></span>&gt; mv * subdir
-mv: cannot move &#39;subdir&#39; to a subdirectory of itself, &#39;subdir/subdir&#39;
-</pre></div>
-
-
-<p><code>mv</code> still does what I wanted it to, but it prints an error message and returns a non-zero error code.  That behavior might not be optimal in a more complex shell script where it would be nice to know if an actual problem occurred.  With zsh, it's possible to run a command on every file <em>except</em> the one you specify.</p>
-<div class="highlight"><pre><span></span>&gt; mv ^subdir subdir
-</pre></div>
-
-
-<p>No more complaints from <code>mv</code>!</p>
-<p>You can also use <code>~</code> to match one pattern but not another:  <code>*.gz~*.tar.gz</code> would match all gzipped files which are <em>not</em> contained in a <code>tar</code> archive.</p>
-<h2>ranges</h2>
-<p>So, your grandma asked you to send her some pictures from your vacation.  Ranges are your friend.</p>
-<div class="highlight"><pre><span></span>&gt; tar czf yosemite_pics.tar.gz IMG_&lt;3399-3412&gt;.jpg
-</pre></div>
-
-
-<h2>permissions</h2>
-<p>You can even match files based on their mode bits:</p>
-<div class="highlight"><pre><span></span>chmod 755 *.sh(f777)
-</pre></div>
-
-
-<p>There, now you don't have to worry about someone else modifying your scripts.</p>
-<p>Those parentheses at the end of a pattern allow you to specify glob <em>qualifiers</em>—additional conditions that files must meet, including the type of file (symbolic link, socket, pipe, device, etc.), who owns it, and more.  You can even specify an arbitrary shell command that tests whether or not to include each file in the results.</p>
-<h2>regular expressions</h2>
-<p>Have you ever wanted to delete every file with a name that starts with one or more letters, followed by zero or more digits, and optionally has an extension of .sh or .py?  No?  Well here it is anyway.</p>
-<div class="highlight"><pre><span></span>&gt; rm [[:alpha:]]##[[:digit:]]#(.(sh|py))(#c0,1)
-</pre></div>
-
-
-<p>Phew.  Now these are just getting ridiculous... but as you can see, you can leverage globbing to select files using just about any criteria you can imagine.</p>
-<h3>It doesn't end here...</h3>
-<p>These few examples barely scrape the surface of what zsh can do.  Check out the "FILENAME GENERATION" section of the <code>zshexpn</code> man page and you'll probably find something you never knew you needed.  Have fun!</p>
-<p><small id="footnote1" >[1] Well, <em>almost</em> every file.  Glob patterns don't match a leading "." by default, so hidden files won't be listed unless you enable zsh's <code>GLOB_DOTS</code> option or explicitly include the leading dot in your pattern (for example, <code>**/.*</code>).</small></p>
-<p><small id="footnote2" >[2] You'll have to turn on the EXTENDED_GLOB option to enable some of thease features.  Consult your local zsh man pages for the details.</small></p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>Suppose you want to generate a list of all filenames with a particular extension—to ...</p>
+                <a class="readmore" href="/oh-my-glob.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>

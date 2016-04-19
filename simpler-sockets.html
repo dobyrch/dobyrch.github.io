@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Terminal Tidbits - zsh</title>
+        <title>simpler sockets</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -17,10 +17,15 @@
                     <li class="active"><a href="/category/zsh.html">zsh</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/simpler-sockets.html" rel="bookmark"
+           title="Permalink to simpler sockets">simpler sockets</a></h1>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="/simpler-sockets.html">simpler sockets</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2016-04-19T00:00:00-04:00">
                 Published: Tue 19 April 2016
@@ -31,7 +36,7 @@
         </address>
 <p>In <a href="/category/zsh.html">zsh</a>.</p>
 
-</footer><!-- /.post-info --><p>There are a handful of keys that I never touch—Scroll Lock, SysRq, F1 through F12, and that strange button with an unidentifiable glyph which doesn't seem to do anything.</p>
+</footer><!-- /.post-info -->      <p>There are a handful of keys that I never touch—Scroll Lock, SysRq, F1 through F12, and that strange button with an unidentifiable glyph which doesn't seem to do anything.</p>
 <p>Pause is another one of those keys.  Wouldn't it be nice if <code>pause</code> lived up to its name and could actually pause a video or music, regardless of which window is in focus?</p>
 <p>Well, it can.  But that's not the interesting part.  This post showcases some curious functionality of zsh that ended up being surprisingly useful: the <code>zsocket</code> command.</p>
 <h2>the setup</h2>
@@ -70,60 +75,11 @@ print -u &quot;<span class="cp">${</span><span class="n">REPLY</span><span class
 <p>All that's left is to wire up the pause key to run our script.  That process varies by desktop environment, so I'll leave the rest up to you.</p>
 <h3>One last thing...</h3>
 <p>If you think <code>zsocket</code> is neat, be sure to check out <code>ztcp</code> in the <code>zshmodules</code> man page.  Just as <code>zsocket</code> provides a simple way to communicate via Unix sockets, <code>ztcp</code> can be used to read and write Internet sockets.</p>
-<p>Happy scripting!</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>Happy scripting!</p>
+    </div><!-- /.entry-content -->
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/oh-my-glob.html" rel="bookmark"
-                           title="Permalink to oh my glob">oh my glob</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2016-04-13T00:00:00-04:00">
-                Published: Wed 13 April 2016
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/doug-christman.html">Doug Christman</a>
-        </address>
-<p>In <a href="/category/zsh.html">zsh</a>.</p>
-
-</footer><!-- /.post-info -->                <p>Globs.  Fun to say and pretty darn useful too.  Most of us are probably familiar with <code>*</code>, which expands to all of the files in a directory, but what else can globs do for you?</p>
-<h2>recursion</h2>
-<p>Suppose you want to generate a list of all filenames with a particular extension—to ...</p>
-                <a class="readmore" href="/oh-my-glob.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/you-complete-me.html" rel="bookmark"
-                           title="Permalink to you complete me">you complete me</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2016-04-12T00:00:00-04:00">
-                Published: Tue 12 April 2016
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/doug-christman.html">Doug Christman</a>
-        </address>
-<p>In <a href="/category/zsh.html">zsh</a>.</p>
-
-</footer><!-- /.post-info -->                <p>One of zsh's most convenient features is its flexible completion system. These are just a few examples of tab-completion that I use regularly.  If you're a bash user, don't fear! Check your distribution's repositories for a <code>bash-completion</code> package, which provides much of the functionality shown below ...</p>
-                <a class="readmore" href="/you-complete-me.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-                </ol><!-- /#posts-list -->
-                </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
         </section><!-- /#extras -->
 
