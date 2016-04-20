@@ -45,7 +45,8 @@
 </pre></div>
 
 
-<p>Whenever we run mpv, it will start listening to <code>/tmp/mpv-socket</code> (creating the file if it doesn't already exist).  The man page for mpv describes its protocol in more detail, but the message for toggling the player's pause state is fairly straightforward: </p>
+<p>Whenever we run mpv, it will start listening for commands on a <a href="https://en.wikipedia.org/wiki/Unix_domain_socket">Unix domain socket</a> named <code>/tmp/mpv-socket</code> (creating the file if it doesn't already exist).</p>
+<p>The man page for mpv describes its protocol in more detail, but the message for toggling the player's pause state is fairly straightforward:</p>
 <div class="highlight"><pre><span></span>{&quot;command&quot;: [&quot;cycle&quot;, &quot;pause&quot;]}
 </pre></div>
 
