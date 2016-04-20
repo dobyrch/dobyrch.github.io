@@ -52,14 +52,14 @@
 
 
 <h2>the solution</h2>
-<p>Now that the socket is open, we need to send our command.  Despite the fact that it looks like a file, we can't simply <code>echo</code> a string to the socket:</p>
+<p>Now that the socket is open, we need to send our command.  Despite the fact that it looks like a normal file, we can't simply <code>echo</code> a string to the socket:</p>
 <div class="highlight"><pre><span></span>&gt; echo &#39;{&quot;command&quot;: [&quot;cycle&quot;, &quot;pause&quot;]}&#39; &gt; /tmp/mpv-socket
 zsh: no such device or address: /tmp/mpv-socket
 </pre></div>
 
 
 <p>mpv's man page recommends using <code>socat</code> to talk to the socket. That may be the easiest solution, but I'd rather not install an extra package on my system for a command that I only use in one place.</p>
-<p>We could write a short program to do the job, but the Berkeley sockets API is a bit unwieldy for such a simple task.</p>
+<p>We could write a short program to do the job, but the POSIX socket API is a bit unwieldy for such a simple task.</p>
 <p>Considering that this post is supposed to be about zsh, you already know where this is going.  Fine, let's see what zsh can do:</p>
 <div class="highlight"><pre><span></span>zmodload zsh/net/socket
 zsocket /tmp/mpv-socket
