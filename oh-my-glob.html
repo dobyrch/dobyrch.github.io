@@ -38,7 +38,7 @@
 
 </footer><!-- /.post-info -->      <p>Globs.  Fun to say and pretty darn useful too.  Most of us are probably familiar with <code>*</code>, which expands to all of the files in a directory, but what else can globs do for you?</p>
 <h2>recursion</h2>
-<p>Suppose you want to generate a list of all filenames with a particular extension—to generate a <a href="https://en.wikipedia.org/wiki/Ctags">tags file</a>, for instance.  If your files are spread throughout multiple nested directories, you might use <code>find</code> to do the job:</p>
+<p>Suppose you want to generate a list of all filenames with a particular extension—to create a <a href="https://en.wikipedia.org/wiki/Ctags">tags file</a>, for instance.  If your files are spread throughout multiple nested directories, you might use <code>find</code> to do the job:</p>
 <div class="highlight"><pre><span></span>&gt; find . -name &#39;*.py&#39; -exec ctags {} +
 </pre></div>
 
